@@ -53,6 +53,6 @@ export type PiecesIdDictionary = {
   [id in PieceId]: Piece;
 };
 
-export type PiecesAvailableMovesAsStringDictionary = {
-  [id in PieceId]: BoardPositionAsString[];
+export type PiecesAvailableMovesDictionary = {
+  [id in PieceId]: BoardPosition[];
 };

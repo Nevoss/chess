@@ -5,7 +5,7 @@ import {
   PiecesIdDictionary,
   PieceId,
   PiecesPositionDictionary,
-  PiecesAvailableMovesAsStringDictionary,
+  PiecesAvailableMovesDictionary,
 } from "../../types/game";
 import { calcStraightMoves, makeStringPosition } from "../../utils/game";
 
@@ -29,23 +29,18 @@ export const selectPiecesIdDictionary = createSelector([selectPieces], (pieces) 
   }, {}) as PiecesIdDictionary;
 });
 
-export const selectPiecesOptionalMovesAsString = createSelector(
+export const selectPiecesOptionalMovesDictionary = createSelector(
   [selectPiecesPositionDictionary],
   (pieces) => {
-    return Object.values(pieces).reduce<Partial<PiecesAvailableMovesAsStringDictionary>>(
-      (acc, piece) => {
-        if (["queen", "rook"].includes(piece.type)) {
-          acc[piece.id] = calcStraightMoves(piece, pieces).map((position) =>
-            makeStringPosition(position)
-          );
-        } else {
-          acc[piece.id] = [];
-        }
+    return Object.values(pieces).reduce<Partial<PiecesAvailableMovesDictionary>>((acc, piece) => {
+      if (["queen", "rook"].includes(piece.type)) {
+        acc[piece.id] = calcStraightMoves(piece, pieces);
+      } else {
+        acc[piece.id] = [];
+      }
 
-        return acc;
-      },
-      {}
-    ) as PiecesAvailableMovesAsStringDictionary;
+      return acc;
+    }, {}) as PiecesAvailableMovesDictionary;
   }
 );
 
@@ -57,4 +52,19 @@ export const selectPieceById = createSelector(
 export const selectPieceByPosition = createSelector(
   [selectPiecesPositionDictionary, (_, position: BoardPosition) => position],
   (pieces, position) => pieces[makeStringPosition(position)] || null
+);
+
+export const selectIsOptionalMoveForPieceId = createSelector(
+  [
+    selectPiecesOptionalMovesDictionary,
+    (_, { id, position }: { id: PieceId; position: BoardPosition }) => ({
+      id,
+      position,
+    }),
+  ],
+  (optionalMoves, { id, position }) => {
+    return optionalMoves[id]
+      .map((position) => makeStringPosition(position))
+      .includes(makeStringPosition(position));
+  }
 );

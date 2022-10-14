@@ -17,6 +17,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware(),
     ...Object.values(playerService.middlewares),
+    ...Object.values(gameService.middlewares),
   ],
 });
 

@@ -28,7 +28,7 @@ export default function BoardSquare({ isLight, position: [file, rank] }: BoardSq
     );
 
   const selectPiece = (piece: Piece) => dispatch(playerActions.selectPiece(piece.id));
-  const movePiece = () => {};
+  const moveSelectedPiece = () => dispatch(playerActions.moveSelectedPiece([file, rank]));
 
   return (
     <div
@@ -49,18 +49,10 @@ export default function BoardSquare({ isLight, position: [file, rank] }: BoardSq
             }
       )}
     >
-      {file === firstBoardFile && (
-        <BoardSquareLabel isLight={isLight} position="top">
-          {rank}
-        </BoardSquareLabel>
-      )}
-      {rank === firstBoardRank && (
-        <BoardSquareLabel isLight={isLight} position="bottom">
-          {file}
-        </BoardSquareLabel>
-      )}
+      {file === firstBoardFile && <BoardSquareLabel position="top">{rank}</BoardSquareLabel>}
+      {rank === firstBoardRank && <BoardSquareLabel position="bottom">{file}</BoardSquareLabel>}
       {isSquareIsAnOptionalMove && (
-        <BoardSquareOptionalMove onClick={movePiece} captureMove={!!piece} />
+        <BoardSquareOptionalMove onClick={moveSelectedPiece} captureMove={!!piece} />
       )}
       {piece && (
         <BoardSquarePiece piece={piece} onSelect={selectPiece} canSelect={canSelectPiece} />

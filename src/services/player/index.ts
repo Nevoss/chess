@@ -5,11 +5,10 @@ import state from "./state";
 const slice = createSlice({
   name: "player",
   initialState: state,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(customActions.setSelectedPieceId, (state, action) => {
+  reducers: {
+    setSelectedPieceId: (state, action) => {
       state.selectedPieceId = action.payload;
-    });
+    },
   },
 });
 

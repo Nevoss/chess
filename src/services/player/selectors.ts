@@ -9,7 +9,12 @@ export const selectColor = (state: RootState) => state.player.color;
 
 export const selectCanSelectPiece = createSelector(
   [selectColor, gameSelectors.selectPieceById],
-  (color, piece?) => color === piece?.color
+  (color, piece?) => !!piece?.position?.length && color === piece?.color
+);
+
+export const selectSelectedPiece = createSelector(
+  [selectSelectedPieceId, gameSelectors.selectPiecesIdDictionary],
+  (id, pieces) => (id ? pieces[id] : null) || null
 );
 
 export const selectIsPieceSelected = createSelector(
@@ -20,9 +25,13 @@ export const selectIsPieceSelected = createSelector(
 export const selectIsOptionalMoveForSelectedPiece = createSelector(
   [
     selectSelectedPieceId,
-    gameSelectors.selectPiecesOptionalMovesAsString,
+    gameSelectors.selectPiecesOptionalMovesDictionary,
     (_, position: BoardPosition) => position,
   ],
   (selectedPieceId, optionalMoves, position) =>
-    selectedPieceId ? optionalMoves[selectedPieceId].includes(makeStringPosition(position)) : false
+    selectedPieceId
+      ? optionalMoves[selectedPieceId]
+          .map((position) => makeStringPosition(position))
+          .includes(makeStringPosition(position))
+      : false
 );
