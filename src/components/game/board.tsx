@@ -22,7 +22,7 @@ export default function Board(props: BoardProps) {
         <span
           className={classNames("h-4 w-4 rounded-full", {
             "bg-white border border-gray-500": turn === "white",
-            "bg-gray-600": turn === "black",
+            "bg-gray-900": turn === "black",
           })}
         />
       </div>
