@@ -20,6 +20,9 @@ const slice = createSlice({
 
       state.pieces[index].position = null;
     },
+    toggleTurn(state) {
+      state.turn = state.turn === "white" ? "black" : "white";
+    },
   },
 });
 

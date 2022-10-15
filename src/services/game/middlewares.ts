@@ -2,6 +2,7 @@ import { Middleware } from "redux";
 import { RootState } from "../../store";
 import { selectors, actions } from "./index";
 import { actions as commonActions } from "../common/index";
+import { isPositionInsidePositionsCollection } from "../../core/game/moves";
 
 export const movePiecesMiddleware: Middleware<{}, RootState> =
   ({ dispatch, getState }) =>
@@ -15,7 +16,12 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
 
     const state = getState();
 
-    if (!selectors.selectIsOptionalMoveForPieceId(state, action.payload)) {
+    if (
+      !isPositionInsidePositionsCollection(
+        action.payload.position,
+        selectors.selectPieceOptionalMovesById(state, action.payload.id)
+      )
+    ) {
       dispatch(
         commonActions.error({
           actionType: action.type,
@@ -31,4 +37,5 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
     }
 
     dispatch(actions.updatePiecePosition(action.payload));
+    dispatch(actions.toggleTurn());
   };

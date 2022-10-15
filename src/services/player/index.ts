@@ -9,6 +9,9 @@ const slice = createSlice({
     setSelectedPieceId: (state, action) => {
       state.selectedPieceId = action.payload;
     },
+    removeSelection: (state) => {
+      state.selectedPieceId = null;
+    },
   },
 });
 

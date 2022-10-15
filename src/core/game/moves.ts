@@ -1,20 +1,16 @@
-import {
-  BoardFile,
-  BoardPosition,
-  BoardPositionAsString,
-  BoardRank,
-  Piece,
-  PiecesPositionDictionary,
-} from "../types/game";
+import { BoardPosition, Piece, PiecesPositionDictionary } from "../../types/game";
+import { makeStringPosition } from "./position";
+import { boardRanks } from "./board";
 
-export const boardRanks: BoardRank[] = ["1", "2", "3", "4", "5", "6", "7", "8"];
-export const boardFiles: BoardFile[] = ["A", "B", "C", "D", "E", "F", "G", "H"];
-export const firstBoardRank = boardRanks[0];
-export const firstBoardFile = boardFiles[0];
-
-export const makeStringPosition = ([file, rank]: BoardPosition): BoardPositionAsString => {
-  return `${file}${rank}`;
-};
+/**
+ * Check if position exists in positions collection.
+ */
+export function isPositionInsidePositionsCollection(
+  position: BoardPosition,
+  positions: BoardPosition[]
+) {
+  return positions.map(makeStringPosition).includes(makeStringPosition(position));
+}
 
 const calcRankStraightMoves = (piece: Piece, pieces: PiecesPositionDictionary): BoardPosition[] => {
   if (!piece.position) {

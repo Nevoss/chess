@@ -1,5 +1,7 @@
 import { RootState } from "../../store";
 import { createSelector } from "reselect";
+import { makeStringPosition } from "../../core/game/position";
+import { calcStraightMoves } from "../../core/game/moves";
 import {
   BoardPosition,
   PiecesIdDictionary,
@@ -7,9 +9,9 @@ import {
   PiecesPositionDictionary,
   PiecesAvailableMovesDictionary,
 } from "../../types/game";
-import { calcStraightMoves, makeStringPosition } from "../../utils/game";
 
 export const selectPieces = (state: RootState) => state.game.pieces;
+export const selectTurn = (state: RootState) => state.game.turn;
 
 export const selectPiecesPositionDictionary = createSelector([selectPieces], (pieces) => {
   return pieces.reduce<PiecesPositionDictionary>((acc, piece) => {
@@ -54,17 +56,7 @@ export const selectPieceByPosition = createSelector(
   (pieces, position) => pieces[makeStringPosition(position)] || null
 );
 
-export const selectIsOptionalMoveForPieceId = createSelector(
-  [
-    selectPiecesOptionalMovesDictionary,
-    (_, { id, position }: { id: PieceId; position: BoardPosition }) => ({
-      id,
-      position,
-    }),
-  ],
-  (optionalMoves, { id, position }) => {
-    return optionalMoves[id]
-      .map((position) => makeStringPosition(position))
-      .includes(makeStringPosition(position));
-  }
+export const selectPieceOptionalMovesById = createSelector(
+  [selectPiecesOptionalMovesDictionary, (_, id: PieceId) => id],
+  (pieces, id) => pieces[id] || []
 );

@@ -2,25 +2,39 @@ import { Middleware } from "redux";
 import { RootState } from "../../store";
 import { actions, selectors } from "./index";
 import { actions as commonActions } from "../common/index";
-import { actions as gameActions } from "../game/index";
+import { actions as gameActions, selectors as gameSelectors } from "../game/index";
+import { canSelectPiece } from "../../core/player/selection";
 
-export const selectPieceMiddleware: Middleware<{}, RootState> =
+export const togglePieceSelectionMiddleware: Middleware<{}, RootState> =
   ({ dispatch, getState }) =>
   (next) =>
   (action) => {
     next(action);
 
-    if (!actions.selectPiece.match(action)) {
+    if (!actions.togglePieceSelection.match(action)) {
       return;
     }
 
-    if (!selectors.selectCanSelectPiece(getState(), action.payload)) {
+    const state = getState();
+
+    if (
+      !canSelectPiece(
+        selectors.selectColor(state),
+        gameSelectors.selectPieceById(state, action.payload)
+      )
+    ) {
       dispatch(
         commonActions.error({
           actionType: action.type,
           message: "You can't select a piece that is not yours",
         })
       );
+
+      return;
+    }
+
+    if (selectors.selectSelectedPieceId(state) === action.payload) {
+      dispatch(actions.removeSelection());
 
       return;
     }
@@ -38,7 +52,8 @@ export const moveSelectedPieceMiddleware: Middleware<{}, RootState> =
       return;
     }
 
-    const piece = selectors.selectSelectedPiece(getState());
+    const state = getState();
+    const piece = selectors.selectSelectedPiece(state);
 
     if (!piece) {
       dispatch(
@@ -51,5 +66,19 @@ export const moveSelectedPieceMiddleware: Middleware<{}, RootState> =
       return;
     }
 
+    const isPlayerTurn = gameSelectors.selectTurn(state) === selectors.selectColor(state);
+
+    if (!isPlayerTurn) {
+      dispatch(
+        commonActions.error({
+          actionType: action.type,
+          message: "You can't move a piece when it's not your turn",
+        })
+      );
+
+      return;
+    }
+
     dispatch(gameActions.movePiece(piece.id, action.payload));
+    dispatch(actions.removeSelection());
   };
