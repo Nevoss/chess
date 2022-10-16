@@ -43,6 +43,7 @@ export interface Piece {
   type: PieceType;
   color: PlayerColor;
   position: BoardPosition | null; // null means the piece is captured
+  hasMoved: boolean;
 }
 
 export type PiecesPositionDictionary = Partial<{

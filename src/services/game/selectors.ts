@@ -1,7 +1,7 @@
 import { RootState } from "../../store";
 import { createSelector } from "reselect";
 import { makeStringPosition } from "../../core/game/position";
-import { calcQueenMoves } from "../../core/game/moves";
+import { calcPieceOptionalMoves } from "../../core/game/moves";
 import {
   BoardPosition,
   PiecesIdDictionary,
@@ -35,11 +35,7 @@ export const selectPiecesOptionalMovesDictionary = createSelector(
   [selectPiecesPositionDictionary],
   (pieces) => {
     return Object.values(pieces).reduce<Partial<PiecesAvailableMovesDictionary>>((acc, piece) => {
-      if (["queen"].includes(piece.type)) {
-        acc[piece.id] = calcQueenMoves(piece, pieces);
-      } else {
-        acc[piece.id] = [];
-      }
+      acc[piece.id] = calcPieceOptionalMoves(piece, pieces);
 
       return acc;
     }, {}) as PiecesAvailableMovesDictionary;
