@@ -20,6 +20,11 @@ const slice = createSlice({
 
       state.pieces[index].position = null;
     },
+    markPieceAsMoved(state, { payload: id }: PayloadAction<PieceId>) {
+      const index = state.pieces.findIndex((piece) => piece.id === id);
+
+      state.pieces[index].hasMoved = true;
+    },
     toggleTurn(state) {
       state.turn = state.turn === "white" ? "black" : "white";
     },

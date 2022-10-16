@@ -14,7 +14,7 @@ const state: GameState = {
     { id: "white-pawn-4", type: "pawn", color: "white", position: ["D", "2"], hasMoved: false },
     { id: "white-pawn-5", type: "pawn", color: "white", position: ["E", "2"], hasMoved: false },
     { id: "white-pawn-6", type: "pawn", color: "white", position: ["F", "2"], hasMoved: false },
-    { id: "white-pawn-7", type: "pawn", color: "white", position: ["G", "2"], hasMoved: false },
+    { id: "white-pawn-7", type: "pawn", color: "white", position: ["G", "6"], hasMoved: true },
     { id: "white-pawn-8", type: "pawn", color: "white", position: ["H", "2"], hasMoved: false },
     { id: "white-rook-1", type: "rook", color: "white", position: ["A", "3"], hasMoved: false },
     { id: "white-rook-2", type: "rook", color: "white", position: ["H", "3"], hasMoved: false },

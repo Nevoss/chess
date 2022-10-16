@@ -37,5 +37,10 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
     }
 
     dispatch(actions.updatePiecePosition(action.payload));
+
+    if (!selectors.selectPieceById(state, action.payload.id).hasMoved) {
+      dispatch(actions.markPieceAsMoved(action.payload.id));
+    }
+
     dispatch(actions.toggleTurn());
   };

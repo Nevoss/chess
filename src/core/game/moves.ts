@@ -17,7 +17,7 @@ type MoveCalculationFunction = (
   delta: number
 ) => BoardPosition;
 
-type MoveCalculationKeys =
+type DirectionKey =
   | "toTop"
   | "toBottom"
   | "toLeft"
@@ -36,13 +36,21 @@ type MoveCalculationKeys =
   | "knightToRightBottom";
 
 type MoveCalculation = {
-  [key in MoveCalculationKeys]: MoveCalculationFunction;
+  [key in DirectionKey]: MoveCalculationFunction;
 };
 
-type PieceMovesOptions = {
+type ValidateMoveFunction = (context: {
+  piece: Piece;
+  position: BoardPosition;
+  direction: DirectionKey;
+  pieces: PiecesPositionDictionary;
+}) => boolean;
+
+type PiecesMoveOptions = {
   [key in PieceType]: {
-    steps: number;
-    movesFns: MoveCalculationFunction[];
+    steps: number | ((piece: Piece) => number);
+    movesFns: MoveCalculationFunction[] | ((piece: Piece) => MoveCalculationFunction[]);
+    validateMoveFns?: ValidateMoveFunction[];
   };
 };
 
@@ -97,7 +105,7 @@ const movesCalculation: MoveCalculation = {
   },
 };
 
-const piecesMovesOptions: PieceMovesOptions = {
+const piecesMoveOptions: PiecesMoveOptions = {
   queen: {
     steps: 7,
     movesFns: [
@@ -143,8 +151,31 @@ const piecesMovesOptions: PieceMovesOptions = {
     ],
   },
   pawn: {
-    steps: 1,
-    movesFns: [],
+    steps: (piece: Piece) => (piece.hasMoved ? 1 : 2),
+    movesFns: (piece: Piece) =>
+      piece.color === "white"
+        ? [movesCalculation.toTop, movesCalculation.toTopLeft, movesCalculation.toTopRight]
+        : [
+            movesCalculation.toBottom,
+            movesCalculation.toBottomLeft,
+            movesCalculation.toBottomRight,
+          ],
+    validateMoveFns: [
+      ({ direction, pieces, position }) => {
+        // Pawn cannot capture piece in front of it.
+        return !(["toTop", "toBottom"].includes(direction) && pieces[makeStringPosition(position)]);
+      },
+      ({ direction, pieces, position, piece }) => {
+        // Pawn can move diagonally only if there is a piece to capture.
+        if (!["toTopLeft", "toTopRight", "toBottomLeft", "toBottomRight"].includes(direction)) {
+          return true;
+        }
+
+        const pieceInRequestedPosition = pieces[makeStringPosition(position)];
+
+        return !!pieceInRequestedPosition && pieceInRequestedPosition.color !== piece.color;
+      },
+    ],
   },
   king: {
     steps: 1,
@@ -186,23 +217,36 @@ export function calcPieceOptionalMoves(
   }
 
   const [file, rank] = piece.position;
-
-  let optionalMoves = piecesMovesOptions[piece.type].movesFns.map((moveFn) => ({
-    moveFn,
-    shouldRemove: false,
-  }));
+  const pieceMoveOptions = piecesMoveOptions[piece.type];
 
   const fileIndex = boardFiles.indexOf(file);
   const rankIndex = boardRanks.indexOf(rank);
 
+  const steps =
+    typeof pieceMoveOptions.steps === "function"
+      ? pieceMoveOptions.steps(piece)
+      : pieceMoveOptions.steps;
+
+  let optionalMoves = (
+    typeof pieceMoveOptions.movesFns === "function"
+      ? pieceMoveOptions.movesFns(piece)
+      : pieceMoveOptions.movesFns
+  ).map((moveFn) => ({ moveFn, shouldRemove: false }));
+
+  const validateMoveFns: ValidateMoveFunction[] = [
+    ({ position }) => !!position[0] && !!position[1], // Check for valid position
+    ...(pieceMoveOptions.validateMoveFns || []),
+  ];
+
   const moves: BoardPosition[] = [];
 
-  for (let i = 0; i < piecesMovesOptions[piece.type].steps; i++) {
+  for (let i = 0; i < steps; i++) {
     for (let j = 0; j < optionalMoves.length; j++) {
-      const move = optionalMoves[j].moveFn([fileIndex, rankIndex], i + 1),
-        isValidMove = move[0] && move[1];
+      const moveFn = optionalMoves[j].moveFn;
+      const move = moveFn([fileIndex, rankIndex], i + 1);
+      const direction = moveFn.name as DirectionKey;
 
-      if (!isValidMove) {
+      if (!validateMoveFns.every((fn) => fn({ piece, position: move, direction, pieces }))) {
         optionalMoves[j].shouldRemove = true;
 
         continue;
