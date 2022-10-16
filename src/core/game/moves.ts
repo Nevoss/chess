@@ -179,33 +179,17 @@ const piecesMoveOptions: PiecesMoveOptions = {
   },
   king: {
     steps: 1,
-    movesFns: [],
+    movesFns: [
+      movesCalculation.toTop,
+      movesCalculation.toBottom,
+      movesCalculation.toLeft,
+      movesCalculation.toRight,
+      movesCalculation.toTopLeft,
+      movesCalculation.toTopRight,
+      movesCalculation.toBottomLeft,
+      movesCalculation.toBottomRight,
+    ],
   },
-  // pawn: {
-  //   steps: (piece: Piece) => (piece.hasMoved ? 1 : 2),
-  //   movesFns: (piece: Piece) =>
-  //     piece.color === "white"
-  //       ? [movesCalculation.toTop, movesCalculation.toTopLeft, movesCalculation.toTopRight]
-  //       : [
-  //           movesCalculation.toBottom,
-  //           movesCalculation.toBottomLeft,
-  //           movesCalculation.toBottomRight,
-  //         ],
-  //   validateMove: ({
-  //     piece,
-  //     move,
-  //     pieces,
-  //   }: {
-  //     piece: Piece;
-  //     move: BoardPosition;
-  //     pieces: PiecesPositionDictionary;
-  //   }) => {
-  //     // return !pieces[makeStringPosition(position)];
-  //   },
-  // },
-  // king: {
-  //   // steps: (piece: Piece, pieces: Piece[]) => (piece.hasMoved ? 1 : 2),
-  // },
 };
 
 export function calcPieceOptionalMoves(
