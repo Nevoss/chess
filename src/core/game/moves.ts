@@ -41,9 +41,9 @@ type MoveCalculation = {
 
 type ValidateMoveFunction = (context: {
   piece: Piece;
-  position: BoardPosition;
   direction: DirectionKey;
-  pieces: PiecesPositionDictionary;
+  moveTo: BoardPosition;
+  pieceInNewPosition?: Piece | null;
 }) => boolean;
 
 type PiecesMoveOptions = {
@@ -161,19 +161,16 @@ const piecesMoveOptions: PiecesMoveOptions = {
             movesCalculation.toBottomRight,
           ],
     validateMoveFns: [
-      ({ direction, pieces, position }) => {
-        // Pawn cannot capture piece in front of it.
-        return !(["toTop", "toBottom"].includes(direction) && pieces[makeStringPosition(position)]);
+      // Pawn cannot capture piece in front of it.
+      ({ direction, pieceInNewPosition }) => {
+        return !["toTop", "toBottom"].includes(direction) || !pieceInNewPosition;
       },
-      ({ direction, pieces, position, piece }) => {
-        // Pawn can move diagonally only if there is a piece to capture.
-        if (!["toTopLeft", "toTopRight", "toBottomLeft", "toBottomRight"].includes(direction)) {
-          return true;
-        }
-
-        const pieceInRequestedPosition = pieces[makeStringPosition(position)];
-
-        return !!pieceInRequestedPosition && pieceInRequestedPosition.color !== piece.color;
+      // Pawn can move diagonally only if there is a piece to capture.
+      ({ direction, pieceInNewPosition, piece }) => {
+        return (
+          !["toTopLeft", "toTopRight", "toBottomLeft", "toBottomRight"].includes(direction) ||
+          (!!pieceInNewPosition && pieceInNewPosition.color !== piece.color)
+        );
       },
     ],
   },
@@ -218,7 +215,8 @@ export function calcPieceOptionalMoves(
   ).map((moveFn) => ({ moveFn, shouldRemove: false }));
 
   const validateMoveFns: ValidateMoveFunction[] = [
-    ({ position }) => !!position[0] && !!position[1], // Check for valid position
+    ({ moveTo }) => !!moveTo[0] && !!moveTo[1], // Check for valid position
+    ({ pieceInNewPosition }) => !pieceInNewPosition || pieceInNewPosition.color !== piece.color, // Check for friendly piece
     ...(pieceMoveOptions.validateMoveFns || []),
   ];
 
@@ -227,26 +225,22 @@ export function calcPieceOptionalMoves(
   for (let i = 0; i < steps; i++) {
     for (let j = 0; j < optionalMoves.length; j++) {
       const moveFn = optionalMoves[j].moveFn;
-      const move = moveFn([fileIndex, rankIndex], i + 1);
+      const moveTo = moveFn([fileIndex, rankIndex], i + 1);
       const direction = moveFn.name as DirectionKey;
+      const pieceInNewPosition = pieces[makeStringPosition(moveTo)];
+      const isValidMove = validateMoveFns.every((fn) =>
+        fn({ direction, moveTo, piece, pieceInNewPosition })
+      );
 
-      if (!validateMoveFns.every((fn) => fn({ piece, position: move, direction, pieces }))) {
+      if (!isValidMove || pieceInNewPosition) {
         optionalMoves[j].shouldRemove = true;
 
-        continue;
-      }
-
-      const pieceAtPosition = pieces[makeStringPosition(move)];
-
-      if (pieceAtPosition) {
-        optionalMoves[j].shouldRemove = true;
-
-        if (pieceAtPosition.color === piece.color) {
+        if (!isValidMove) {
           continue;
         }
       }
 
-      moves.push(move);
+      moves.push(moveTo);
     }
 
     optionalMoves = optionalMoves.filter((move) => !move.shouldRemove);
