@@ -35,18 +35,22 @@ const validAndNotBlocking = { invalid: false, blocking: false };
 const exposeKingToAttack: [string, ValidateMoveFunction] = [
   EXPOSE_KING_TO_ATTACK_VALIDATION_KEY,
   ({ piece, move: { to }, pieces }) => {
-    const king = Object.values(pieces).find((p) => p.color === piece.color && p.type === "king");
+    const pieceAfterMove = { ...piece, position: to };
+    const piecesAfterMove: PiecesPositionDictionary = {
+      ...pieces,
+      [makeStringPosition(to)]: pieceAfterMove,
+    };
+
+    delete piecesAfterMove[makeStringPosition(piece.position)];
+
+    const king =
+      pieceAfterMove.type !== "king"
+        ? Object.values(pieces).find((p) => p.color === pieceAfterMove.color && p.type === "king")
+        : pieceAfterMove;
 
     if (!king) {
       throw new Error("The king is not exist in the board, something went wrong.");
     }
-
-    const piecesAfterMove: PiecesPositionDictionary = {
-      ...pieces,
-      [makeStringPosition(to)]: { ...piece, position: to },
-    };
-
-    delete piecesAfterMove[makeStringPosition(piece.position)];
 
     return isPieceUnderAttack({ position: king.position, color: king.color }, piecesAfterMove, {
       exposeOpponentKingToAttack: true,

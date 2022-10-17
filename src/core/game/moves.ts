@@ -17,14 +17,14 @@ export function isPieceUnderAttack(
     return false;
   }
 
-  return Object.values(pieces).some(
-    (piece) =>
-      piece.color !== color &&
+  return Object.values(pieces)
+    .filter((piece) => piece.color !== color)
+    .some((piece) =>
       isPositionInsidePositionsCollection(
         position,
         calcPieceOptionalMoves(piece, pieces, { exposeKingToAttack: exposeOpponentKingToAttack })
       )
-  );
+    );
 }
 
 export function calcPieceOptionalMoves(
