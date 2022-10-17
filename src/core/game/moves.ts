@@ -53,7 +53,7 @@ export function calcPieceOptionalMoves(
   }
 
   // Run over the steps that the piece can make.
-  for (let i = 0; i < pieceMoveOptions.steps(piece); i++) {
+  for (let i = 0; i < moveSteps; i++) {
     // Run over the possible moves that the piece can make.
     for (const [key, handler] of tempMoveHandlers.entries()) {
       const newPosition = handler([fileIndex, rankIndex], i + 1);
