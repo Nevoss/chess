@@ -3,10 +3,15 @@ import { boardFiles, boardRanks } from "./board";
 import piecesMoveOptions from "./move-options";
 import { isPositionInsidePositionsCollection, makeStringPosition } from "./position";
 import { MoveHandlersMap } from "./move-options/handlers";
+import {
+  EXPOSE_KING_TO_ATTACK_VALIDATION_KEY,
+  ValidateMoveFunctionMap,
+} from "./move-options/validations";
 
-function isPieceUnderAttack(
+export function isPieceUnderAttack(
   { position, color }: Pick<Piece, "position" | "color">,
-  pieces: PiecesPositionDictionary
+  pieces: PiecesPositionDictionary,
+  { exposeOpponentKingToAttack = false } = {}
 ) {
   if (!position) {
     return false;
@@ -15,13 +20,17 @@ function isPieceUnderAttack(
   return Object.values(pieces).some(
     (piece) =>
       piece.color !== color &&
-      isPositionInsidePositionsCollection(position, calcPieceOptionalMoves(piece, pieces))
+      isPositionInsidePositionsCollection(
+        position,
+        calcPieceOptionalMoves(piece, pieces, { exposeKingToAttack: exposeOpponentKingToAttack })
+      )
   );
 }
 
 export function calcPieceOptionalMoves(
   piece: Piece,
-  pieces: PiecesPositionDictionary
+  pieces: PiecesPositionDictionary,
+  { exposeKingToAttack = false } = {}
 ): BoardPosition[] {
   if (!piece.position) {
     return [];
@@ -40,7 +49,12 @@ export function calcPieceOptionalMoves(
   const rankIndex = boardRanks.indexOf(piece.position[1]);
 
   const moves: BoardPosition[] = [];
+  const tempValidations: ValidateMoveFunctionMap = new Map([...moveValidations]);
   const tempMoveHandlers: MoveHandlersMap = new Map([...moveHandlers]);
+
+  if (exposeKingToAttack) {
+    tempValidations.delete(EXPOSE_KING_TO_ATTACK_VALIDATION_KEY);
+  }
 
   // Run over the steps that the piece can make.
   for (let i = 0; i < pieceMoveOptions.steps(piece); i++) {
@@ -51,9 +65,10 @@ export function calcPieceOptionalMoves(
       const validationResult = { invalid: false, blocking: false };
 
       // Run over the validations that the piece can make.
-      for (const validation of moveValidations.values()) {
+      for (const validation of tempValidations.values()) {
         const { invalid, blocking } = validation({
           piece,
+          pieces,
           pieceInNewPosition,
           move: {
             handlerKey: key,
@@ -68,6 +83,10 @@ export function calcPieceOptionalMoves(
 
         if (invalid) {
           validationResult.invalid = true;
+        }
+
+        if (validationResult.invalid && validationResult.blocking) {
+          break;
         }
       }
 

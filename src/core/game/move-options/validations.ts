@@ -1,8 +1,11 @@
-import { BoardPosition, Piece, PieceType } from "../../../types/game";
+import { BoardPosition, Piece, PiecesPositionDictionary, PieceType } from "../../../types/game";
 import { MoveHandlerKey } from "./handlers";
+import { isPieceUnderAttack } from "../moves";
+import { makeStringPosition } from "../position";
 
 type ValidateMoveFunction = (context: {
   piece: Piece;
+  pieces: PiecesPositionDictionary;
   pieceInNewPosition?: Piece | null;
   move: {
     handlerKey: MoveHandlerKey;
@@ -13,10 +16,45 @@ type ValidateMoveFunction = (context: {
 
 export type ValidateMoveFunctionMap = Map<string, ValidateMoveFunction>;
 
+export const EXPOSE_KING_TO_ATTACK_VALIDATION_KEY = "exposeKingToAttack";
+
 const invalidAndBlocking = { invalid: true, blocking: true };
-const invalidAndNotBlocking = { invalid: true, blocking: false };
+// const invalidAndNotBlocking = { invalid: true, blocking: false };
 const validAndBlocking = { invalid: false, blocking: true };
 const validAndNotBlocking = { invalid: false, blocking: false };
+
+/**
+ * This one is not in the defaults map to be sure it is the last
+ * validation. (it is the heaviest calculation)
+ */
+const exposeKingToAttack: [string, ValidateMoveFunction] = [
+  EXPOSE_KING_TO_ATTACK_VALIDATION_KEY,
+  ({ piece, move: { to }, pieces }) => {
+    const king = Object.values(pieces).find((p) => p.color === piece.color && p.type === "king");
+
+    if (!king) {
+      throw new Error("The king is not exist in the board, something went wrong.");
+    }
+
+    if (!piece.position) {
+      // TODO: Fix this by creating CapturePiece interface
+      throw new Error("Position is not exists");
+    }
+
+    const piecesAfterMove: PiecesPositionDictionary = {
+      ...pieces,
+      [makeStringPosition(to)]: { ...piece, position: to },
+    };
+
+    delete piecesAfterMove[makeStringPosition(piece.position)];
+
+    return isPieceUnderAttack({ position: king.position, color: king.color }, piecesAfterMove, {
+      exposeOpponentKingToAttack: true,
+    })
+      ? invalidAndBlocking
+      : validAndNotBlocking;
+  },
+];
 
 const defaults: ValidateMoveFunctionMap = new Map([
   ["inBoard", ({ move: { to } }) => (!to[0] || !to[1] ? invalidAndBlocking : validAndNotBlocking)],
@@ -37,11 +75,11 @@ const defaults: ValidateMoveFunctionMap = new Map([
 ]);
 
 const piecesMovesValidation: Map<PieceType, ValidateMoveFunctionMap> = new Map([
-  ["king", defaults],
-  ["queen", defaults],
-  ["bishop", defaults],
-  ["knight", defaults],
-  ["rook", defaults],
+  ["king", new Map([...defaults, exposeKingToAttack])],
+  ["queen", new Map([...defaults, exposeKingToAttack])],
+  ["bishop", new Map([...defaults, exposeKingToAttack])],
+  ["knight", new Map([...defaults, exposeKingToAttack])],
+  ["rook", new Map([...defaults, exposeKingToAttack])],
   [
     "pawn",
     new Map([
@@ -70,6 +108,7 @@ const piecesMovesValidation: Map<PieceType, ValidateMoveFunctionMap> = new Map([
             : validAndBlocking;
         },
       ],
+      exposeKingToAttack,
     ]),
   ],
 ]);
