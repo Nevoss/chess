@@ -1,8 +1,8 @@
-export type PlayerColor = "white" | "black";
 export type BoardRank = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 export type BoardFile = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 export type BoardPosition = [BoardFile, BoardRank];
 export type BoardPositionAsString = `${BoardFile}${BoardRank}`;
+export type PieceColor = "white" | "black";
 export type PieceType = "pawn" | "rook" | "knight" | "bishop" | "queen" | "king";
 export type PieceId =
   | "white-pawn-1"
@@ -41,7 +41,7 @@ export type PieceId =
 export interface Piece {
   id: PieceId;
   type: PieceType;
-  color: PlayerColor;
+  color: PieceColor;
   position: BoardPosition | null; // null means the piece is captured
   hasMoved: boolean;
 }

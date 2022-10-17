@@ -1,7 +1,7 @@
-import { Piece, PlayerColor } from "../../types/game";
+import { Piece, PieceColor } from "../../types/game";
 
 interface GameState {
-  turn: PlayerColor;
+  turn: PieceColor;
   pieces: Piece[];
 }
 

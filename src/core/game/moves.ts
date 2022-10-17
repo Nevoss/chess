@@ -1,4 +1,10 @@
-import { BoardPosition, Piece, PiecesPositionDictionary, PieceType } from "../../types/game";
+import {
+  BoardPosition,
+  Piece,
+  PiecesPositionDictionary,
+  PieceType,
+  PieceColor,
+} from "../../types/game";
 import { makeStringPosition } from "./position";
 import { boardFiles, boardRanks } from "./board";
 
@@ -189,6 +195,18 @@ const piecesMoveOptions: PiecesMoveOptions = {
   },
 };
 
+function isPositionUnderAttack(
+  color: PieceColor,
+  position: BoardPosition,
+  pieces: PiecesPositionDictionary
+) {
+  return Object.values(pieces).some(
+    (piece) =>
+      piece.color !== color &&
+      isPositionInsidePositionsCollection(position, calcPieceOptionalMoves(piece, pieces))
+  );
+}
+
 export function calcPieceOptionalMoves(
   piece: Piece,
   pieces: PiecesPositionDictionary
@@ -249,6 +267,8 @@ export function calcPieceOptionalMoves(
       break;
     }
   }
+
+  // TODO: en passant, castling, and pawn promotion
 
   return moves;
 }

@@ -1,8 +1,8 @@
-import { Piece, PieceType, PlayerColor } from "../../types/game";
+import { Piece, PieceType, PieceColor } from "../../types/game";
 import { ReactElement } from "react";
 
 const piceseSvgs: {
-  [key in `${PieceType}-${PlayerColor}`]: ReactElement;
+  [key in `${PieceType}-${PieceColor}`]: ReactElement;
 } = {
   "king-white": (
     <svg xmlns="http://www.w3.org/2000/svg" width={45} height={45}>

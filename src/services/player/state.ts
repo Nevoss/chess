@@ -1,7 +1,7 @@
-import { PieceId, PlayerColor } from "../../types/game";
+import { PieceId, PieceColor } from "../../types/game";
 
 interface PlayerState {
-  color: PlayerColor;
+  color: PieceColor;
   selectedPieceId: PieceId | null;
 }
 
