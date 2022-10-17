@@ -1,5 +1,5 @@
 import { boardFiles, boardRanks } from "../board";
-import { BoardPosition, Piece, PieceType } from "../../../types/game";
+import { BoardPosition, OnBoardPiece, PieceType } from "../../../types/game";
 
 export type MoveHandlerKey =
   | "toTop"
@@ -125,7 +125,7 @@ function only(keys: MoveHandlerKey[]): MoveHandlersMap {
   return new Map([...moveHandlersMap].filter(([key]) => keys.includes(key)));
 }
 
-const piecesMovesHandlers: Map<PieceType, (piece: Piece) => MoveHandlersMap> = new Map([
+const piecesMovesHandlers: Map<PieceType, (piece: OnBoardPiece) => MoveHandlersMap> = new Map([
   [
     "king",
     () =>
@@ -172,7 +172,7 @@ const piecesMovesHandlers: Map<PieceType, (piece: Piece) => MoveHandlersMap> = n
   ],
   [
     "pawn",
-    (piece: Piece) =>
+    (piece: OnBoardPiece) =>
       piece.color === "white"
         ? only(["toTop", "toTopLeft", "toTopRight"])
         : only(["toBottom", "toBottomLeft", "toBottomRight"]),

@@ -1,6 +1,7 @@
 import { RootState } from "../../store";
 import { createSelector } from "reselect";
 import { calcPieceOptionalMoves } from "../../core/game/moves";
+import { isPieceOnTheBoard, makeStringPosition } from "../../core/game/position";
 import {
   BoardPosition,
   PiecesIdDictionary,
@@ -8,14 +9,13 @@ import {
   PiecesPositionDictionary,
   PiecesAvailableMovesDictionary,
 } from "../../types/game";
-import { makeStringPosition } from "../../core/game/position";
 
 export const selectPieces = (state: RootState) => state.game.pieces;
 export const selectTurn = (state: RootState) => state.game.turn;
 
 export const selectPiecesPositionDictionary = createSelector([selectPieces], (pieces) => {
   return pieces.reduce<PiecesPositionDictionary>((acc, piece) => {
-    if (piece.position) {
+    if (isPieceOnTheBoard(piece)) {
       acc[makeStringPosition(piece.position)] = piece;
     }
 
@@ -35,7 +35,9 @@ export const selectPiecesOptionalMovesDictionary = createSelector(
   [selectPiecesPositionDictionary],
   (pieces) => {
     return Object.values(pieces).reduce<Partial<PiecesAvailableMovesDictionary>>((acc, piece) => {
-      acc[piece.id] = calcPieceOptionalMoves(piece, pieces);
+      if (isPieceOnTheBoard(piece)) {
+        acc[piece.id] = calcPieceOptionalMoves(piece, pieces);
+      }
 
       return acc;
     }, {}) as PiecesAvailableMovesDictionary;

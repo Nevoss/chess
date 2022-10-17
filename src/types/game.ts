@@ -46,8 +46,12 @@ export interface Piece {
   hasMoved: boolean;
 }
 
+export interface OnBoardPiece extends Omit<Piece, "position"> {
+  position: BoardPosition;
+}
+
 export type PiecesPositionDictionary = Partial<{
-  [position in BoardPositionAsString]: Piece;
+  [position in BoardPositionAsString]: OnBoardPiece;
 }>;
 
 export type PiecesIdDictionary = {

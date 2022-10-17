@@ -1,12 +1,12 @@
-import { Piece, PieceType } from "../../../types/game";
+import { OnBoardPiece, PieceType } from "../../../types/game";
 import handlers, { MoveHandlersMap } from "./handlers";
 import validations, { ValidateMoveFunctionMap } from "./validations";
 
 type PiecesMoveOptions = Map<
   PieceType,
   {
-    steps: (piece: Piece) => number;
-    handlers: ((piece: Piece) => MoveHandlersMap) | undefined;
+    steps: (piece: OnBoardPiece) => number;
+    handlers: ((piece: OnBoardPiece) => MoveHandlersMap) | undefined;
     validations: ValidateMoveFunctionMap | undefined;
   }
 >;
@@ -55,7 +55,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "pawn",
     {
-      steps: (piece: Piece) => (piece.hasMoved ? 1 : 2),
+      steps: (piece: OnBoardPiece) => (piece.hasMoved ? 1 : 2),
       handlers: handlers.get("pawn"),
       validations: validations.get("pawn"),
     },

@@ -1,4 +1,4 @@
-import { BoardPosition, Piece, PiecesPositionDictionary } from "../../types/game";
+import { BoardPosition, OnBoardPiece, PiecesPositionDictionary } from "../../types/game";
 import { boardFiles, boardRanks } from "./board";
 import piecesMoveOptions from "./move-options";
 import { isPositionInsidePositionsCollection, makeStringPosition } from "./position";
@@ -9,7 +9,7 @@ import {
 } from "./move-options/validations";
 
 export function isPieceUnderAttack(
-  { position, color }: Pick<Piece, "position" | "color">,
+  { position, color }: Pick<OnBoardPiece, "position" | "color">,
   pieces: PiecesPositionDictionary,
   { exposeOpponentKingToAttack = false } = {}
 ) {
@@ -28,14 +28,10 @@ export function isPieceUnderAttack(
 }
 
 export function calcPieceOptionalMoves(
-  piece: Piece,
+  piece: OnBoardPiece,
   pieces: PiecesPositionDictionary,
   { exposeKingToAttack = false } = {}
 ): BoardPosition[] {
-  if (!piece.position) {
-    return [];
-  }
-
   const pieceMoveOptions = piecesMoveOptions.get(piece.type),
     moveHandlers = pieceMoveOptions?.handlers?.(piece),
     moveSteps = pieceMoveOptions?.steps(piece),

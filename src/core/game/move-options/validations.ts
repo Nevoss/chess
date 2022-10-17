@@ -1,12 +1,17 @@
-import { BoardPosition, Piece, PiecesPositionDictionary, PieceType } from "../../../types/game";
+import {
+  BoardPosition,
+  OnBoardPiece,
+  PiecesPositionDictionary,
+  PieceType,
+} from "../../../types/game";
 import { MoveHandlerKey } from "./handlers";
 import { isPieceUnderAttack } from "../moves";
 import { makeStringPosition } from "../position";
 
 type ValidateMoveFunction = (context: {
-  piece: Piece;
+  piece: OnBoardPiece;
   pieces: PiecesPositionDictionary;
-  pieceInNewPosition?: Piece | null;
+  pieceInNewPosition?: OnBoardPiece | null;
   move: {
     handlerKey: MoveHandlerKey;
     from: BoardPosition;
@@ -34,11 +39,6 @@ const exposeKingToAttack: [string, ValidateMoveFunction] = [
 
     if (!king) {
       throw new Error("The king is not exist in the board, something went wrong.");
-    }
-
-    if (!piece.position) {
-      // TODO: Fix this by creating CapturePiece interface
-      throw new Error("Position is not exists");
     }
 
     const piecesAfterMove: PiecesPositionDictionary = {
