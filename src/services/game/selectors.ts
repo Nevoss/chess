@@ -1,6 +1,5 @@
 import { RootState } from "../../store";
 import { createSelector } from "reselect";
-import { makeStringPosition } from "../../core/game/position";
 import { calcPieceOptionalMoves } from "../../core/game/moves";
 import {
   BoardPosition,
@@ -9,6 +8,7 @@ import {
   PiecesPositionDictionary,
   PiecesAvailableMovesDictionary,
 } from "../../types/game";
+import { makeStringPosition } from "../../core/game/position";
 
 export const selectPieces = (state: RootState) => state.game.pieces;
 export const selectTurn = (state: RootState) => state.game.turn;

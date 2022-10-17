@@ -2,7 +2,7 @@ import { Middleware } from "redux";
 import { RootState } from "../../store";
 import { selectors, actions } from "./index";
 import { actions as commonActions } from "../common/index";
-import { isPositionInsidePositionsCollection } from "../../core/game/moves";
+import { isPositionInsidePositionsCollection } from "../../core/game/position";
 
 export const movePiecesMiddleware: Middleware<{}, RootState> =
   ({ dispatch, getState }) =>

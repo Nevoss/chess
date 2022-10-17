@@ -7,8 +7,8 @@ import { selectors as playerSelectors, actions as playerActions } from "../../se
 import type { BoardPosition, Piece } from "../../types/game";
 import BoardSquarePiece from "./board-square-piece";
 import BoardSquareOptionalMove from "./board-square-optional-move";
-import { isPositionInsidePositionsCollection } from "../../core/game/moves";
 import { canSelectPiece } from "../../core/player/selection";
+import { isPositionInsidePositionsCollection } from "../../core/game/position";
 
 interface BoardSquareProps {
   isLight: boolean;
