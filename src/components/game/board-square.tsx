@@ -7,7 +7,6 @@ import { selectors as playerSelectors, actions as playerActions } from "../../se
 import type { BoardPosition, Piece } from "../../types/game";
 import BoardSquarePiece from "./board-square-piece";
 import BoardSquareOptionalMove from "./board-square-optional-move";
-import { canSelectPiece } from "../../core/player/selection";
 import { isPositionInsidePositionsCollection } from "../../core/game/position";
 
 interface BoardSquareProps {
@@ -27,8 +26,8 @@ export default function BoardSquare({ isLight, position: [file, rank] }: BoardSq
     );
 
   const isSelectedPiece = !!piece && !!selectedPiece && piece.id === selectedPiece.id,
-    isPieceSelectable = !!piece && canSelectPiece(playerColor, piece),
-    isSelectedPieceMovable = turn === playerColor,
+    isSelectedPieceMovable =
+      !!selectedPiece && turn === playerColor && selectedPiece.color === playerColor,
     isSquareIsAnOptionalMove = isPositionInsidePositionsCollection(
       [file, rank],
       selectedPieceOptionalMoves
@@ -65,9 +64,7 @@ export default function BoardSquare({ isLight, position: [file, rank] }: BoardSq
           canMove={isSelectedPieceMovable}
         />
       )}
-      {piece && (
-        <BoardSquarePiece piece={piece} onClick={toggleSelection} canSelect={isPieceSelectable} />
-      )}
+      {piece && <BoardSquarePiece piece={piece} onClick={toggleSelection} />}
     </div>
   );
 }

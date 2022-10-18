@@ -3,7 +3,6 @@ import { RootState } from "../../store";
 import { actions, selectors } from "./index";
 import { actions as commonActions } from "../common/index";
 import { actions as gameActions, selectors as gameSelectors } from "../game/index";
-import { canSelectPiece } from "../../core/player/selection";
 
 export const togglePieceSelectionMiddleware: Middleware<{}, RootState> =
   ({ dispatch, getState }) =>
@@ -16,22 +15,6 @@ export const togglePieceSelectionMiddleware: Middleware<{}, RootState> =
     }
 
     const state = getState();
-
-    if (
-      !canSelectPiece(
-        selectors.selectColor(state),
-        gameSelectors.selectPieceById(state, action.payload)
-      )
-    ) {
-      dispatch(
-        commonActions.error({
-          actionType: action.type,
-          message: "You can't select a piece that is not yours",
-        })
-      );
-
-      return;
-    }
 
     if (selectors.selectSelectedPieceId(state) === action.payload) {
       dispatch(actions.removeSelection());
@@ -53,6 +36,7 @@ export const moveSelectedPieceMiddleware: Middleware<{}, RootState> =
     }
 
     const state = getState();
+
     const piece = selectors.selectSelectedPiece(state);
 
     if (!piece) {
@@ -73,6 +57,19 @@ export const moveSelectedPieceMiddleware: Middleware<{}, RootState> =
         commonActions.error({
           actionType: action.type,
           message: "You can't move a piece when it's not your turn",
+        })
+      );
+
+      return;
+    }
+
+    const isPlayerPiece = piece.color === selectors.selectColor(state);
+
+    if (!isPlayerPiece) {
+      dispatch(
+        commonActions.error({
+          actionType: action.type,
+          message: "You can't move a piece that is not yours",
         })
       );
 

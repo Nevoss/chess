@@ -24,7 +24,7 @@ export type ValidateMoveFunctionMap = Map<string, ValidateMoveFunction>;
 export const EXPOSE_KING_TO_ATTACK_VALIDATION_KEY = "exposeKingToAttack";
 
 const invalidAndBlocking = { invalid: true, blocking: true };
-// const invalidAndNotBlocking = { invalid: true, blocking: false };
+const invalidAndNotBlocking = { invalid: true, blocking: false };
 const validAndBlocking = { invalid: false, blocking: true };
 const validAndNotBlocking = { invalid: false, blocking: false };
 
@@ -55,7 +55,7 @@ const exposeKingToAttack: [string, ValidateMoveFunction] = [
     return isPieceUnderAttack({ position: king.position, color: king.color }, piecesAfterMove, {
       exposeOpponentKingToAttack: true,
     })
-      ? invalidAndBlocking
+      ? invalidAndNotBlocking
       : validAndNotBlocking;
   },
 ];

@@ -44,7 +44,7 @@ const state: GameState = {
     // { id: "black-queen", type: "queen", color: "black", position: ["D", "8"], hasMoved: false },
     // { id: "black-king", type: "king", color: "black", position: ["E", "8"], hasMoved: false },
 
-    { id: "white-queen", type: "queen", color: "white", position: ["D", "2"], hasMoved: false },
+    { id: "white-queen", type: "queen", color: "white", position: ["C", "1"], hasMoved: false },
     { id: "white-king", type: "king", color: "white", position: ["E", "1"], hasMoved: false },
     { id: "white-pawn-1", type: "pawn", color: "white", position: ["E", "3"], hasMoved: false },
     { id: "black-queen", type: "queen", color: "black", position: ["A", "5"], hasMoved: false },
@@ -53,6 +53,7 @@ const state: GameState = {
     { id: "black-pawn-2", type: "pawn", color: "black", position: ["D", "4"], hasMoved: false },
     { id: "black-bishop-1", type: "bishop", color: "black", position: ["B", "5"], hasMoved: false },
     { id: "black-rook-1", type: "rook", color: "black", position: ["E", "5"], hasMoved: false },
+    // { id: "black-rook-2", type: "rook", color: "black", position: ["A", "1"], hasMoved: false },
   ],
 };
 
