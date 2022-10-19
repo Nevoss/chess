@@ -30,6 +30,7 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
       );
     }
 
+    const piece = selectors.selectPieceById(state, action.payload.id);
     const opponentPiece = selectors.selectPieceByPosition(state, action.payload.position);
 
     if (opponentPiece) {
@@ -38,7 +39,7 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
 
     dispatch(actions.updatePiecePosition(action.payload));
 
-    if (!selectors.selectPieceById(state, action.payload.id).hasMoved) {
+    if (!piece.hasMoved) {
       dispatch(actions.markPieceAsMoved(action.payload.id));
     }
 

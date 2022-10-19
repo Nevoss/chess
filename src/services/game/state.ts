@@ -1,14 +1,16 @@
-import { GameMode, Piece, PieceColor } from "../../types/game";
+import { GameMode, Piece, PieceColor, PieceMove } from "../../types/game";
 
 interface GameState {
   mode: GameMode;
   turn: PieceColor;
+  history: PieceMove[];
   pieces: Piece[];
 }
 
 const state: GameState = {
   mode: "single-player",
   turn: "white",
+  history: [],
   pieces: [
     // White pieces
     { id: "white-pawn-1", type: "pawn", color: "white", position: ["A", "2"], hasMoved: false },

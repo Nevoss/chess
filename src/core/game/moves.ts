@@ -34,10 +34,10 @@ export function calcPieceOptionalMoves(
 ): BoardPosition[] {
   const pieceMoveOptions = piecesMoveOptions.get(piece.type),
     moveHandlers = pieceMoveOptions?.handlers?.(piece),
-    moveSteps = pieceMoveOptions?.steps(piece),
+    moveMaxSteps = pieceMoveOptions?.maxSteps(piece),
     moveValidations = pieceMoveOptions?.validations;
 
-  if (!moveHandlers || !moveValidations || !moveSteps) {
+  if (!moveHandlers || !moveValidations || !moveMaxSteps) {
     return [];
   }
 
@@ -53,7 +53,7 @@ export function calcPieceOptionalMoves(
   }
 
   // Run over the steps that the piece can make.
-  for (let i = 0; i < moveSteps; i++) {
+  for (let i = 0; i < moveMaxSteps; i++) {
     // Run over the possible moves that the piece can make.
     for (const [key, handler] of tempMoveHandlers.entries()) {
       const newPosition = handler([fileIndex, rankIndex], i + 1);

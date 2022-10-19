@@ -51,6 +51,16 @@ export interface OnBoardPiece extends Omit<Piece, "position"> {
   position: BoardPosition;
 }
 
+// TODO: Need to think about this
+export interface PieceMove {
+  id: PieceId;
+  from: BoardPosition;
+  to: BoardPosition;
+  capturedPieceId?: PieceId | null;
+  promotedTo?: PieceType;
+  flags: ("capture" | "promotion" | "en-passant" | "castle")[];
+}
+
 export type PiecesPositionDictionary = Partial<{
   [position in BoardPositionAsString]: OnBoardPiece;
 }>;

@@ -5,7 +5,7 @@ import validations, { ValidateMoveFunctionMap } from "./validations";
 type PiecesMoveOptions = Map<
   PieceType,
   {
-    steps: (piece: OnBoardPiece) => number;
+    maxSteps: (piece: OnBoardPiece) => number;
     handlers: ((piece: OnBoardPiece) => MoveHandlersMap) | undefined;
     validations: ValidateMoveFunctionMap | undefined;
   }
@@ -15,7 +15,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "king",
     {
-      steps: () => 1,
+      maxSteps: () => 1,
       handlers: handlers.get("king"),
       validations: validations.get("king"),
     },
@@ -23,7 +23,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "queen",
     {
-      steps: () => 7,
+      maxSteps: () => 7,
       handlers: handlers.get("queen"),
       validations: validations.get("queen"),
     },
@@ -31,7 +31,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "bishop",
     {
-      steps: () => 7,
+      maxSteps: () => 7,
       handlers: handlers.get("bishop"),
       validations: validations.get("bishop"),
     },
@@ -39,7 +39,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "knight",
     {
-      steps: () => 1,
+      maxSteps: () => 1,
       handlers: handlers.get("knight"),
       validations: validations.get("knight"),
     },
@@ -47,7 +47,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "rook",
     {
-      steps: () => 7,
+      maxSteps: () => 7,
       handlers: handlers.get("rook"),
       validations: validations.get("rook"),
     },
@@ -55,7 +55,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "pawn",
     {
-      steps: (piece: OnBoardPiece) => (piece.hasMoved ? 1 : 2),
+      maxSteps: (piece: OnBoardPiece) => (piece.hasMoved ? 1 : 2),
       handlers: handlers.get("pawn"),
       validations: validations.get("pawn"),
     },
