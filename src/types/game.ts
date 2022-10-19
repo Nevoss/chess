@@ -1,3 +1,4 @@
+export type GameMode = "single-player";
 export type BoardRank = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
 export type BoardFile = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 export type BoardPosition = [BoardFile, BoardRank];

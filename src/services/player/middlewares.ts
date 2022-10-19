@@ -79,3 +79,24 @@ export const moveSelectedPieceMiddleware: Middleware<{}, RootState> =
     dispatch(gameActions.movePiece(piece.id, action.payload));
     dispatch(actions.removeSelection());
   };
+
+export const toggleTurnWhenGameModeIsSinglePlayerMiddleware: Middleware<{}, RootState> =
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    next(action);
+
+    if (!gameActions.toggleTurn.match(action)) {
+      return;
+    }
+
+    const state = getState();
+
+    const isSinglePlayerMode = gameSelectors.selectMode(state) === "single-player";
+
+    if (!isSinglePlayerMode) {
+      return;
+    }
+
+    dispatch(actions.changeColor(gameSelectors.selectTurn(state)));
+  };

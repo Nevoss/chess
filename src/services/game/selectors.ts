@@ -12,6 +12,7 @@ import {
 
 export const selectPieces = (state: RootState) => state.game.pieces;
 export const selectTurn = (state: RootState) => state.game.turn;
+export const selectMode = (state: RootState) => state.game.mode;
 
 export const selectPiecesPositionDictionary = createSelector([selectPieces], (pieces) => {
   return pieces.reduce<PiecesPositionDictionary>((acc, piece) => {
