@@ -1,6 +1,6 @@
 export type GameMode = "single-player";
 export type BoardRank = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
-export type BoardFile = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
+export type BoardFile = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h";
 export type BoardPosition = [BoardFile, BoardRank];
 export type BoardPositionAsString = `${BoardFile}${BoardRank}`;
 export type PieceColor = "white" | "black";

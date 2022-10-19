@@ -9,19 +9,19 @@ import {
 } from "./move-options/validations";
 
 export function isPieceUnderAttack(
-  { position, color }: Pick<OnBoardPiece, "position" | "color">,
+  piece: OnBoardPiece,
   pieces: PiecesPositionDictionary,
   { exposeOpponentKingToAttack = false } = {}
 ) {
-  if (!position) {
+  if (!piece.position) {
     return false;
   }
 
   return Object.values(pieces)
-    .filter((piece) => piece.color !== color)
+    .filter(({ color }) => piece.color !== color)
     .some((piece) =>
       isPositionInsidePositionsCollection(
-        position,
+        piece.position,
         calcPieceOptionalMoves(piece, pieces, { exposeKingToAttack: exposeOpponentKingToAttack })
       )
     );

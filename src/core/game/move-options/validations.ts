@@ -52,7 +52,7 @@ const exposeKingToAttack: [string, ValidateMoveFunction] = [
       throw new Error("The king is not exist in the board, something went wrong.");
     }
 
-    return isPieceUnderAttack({ position: king.position, color: king.color }, piecesAfterMove, {
+    return isPieceUnderAttack(pieceAfterMove, piecesAfterMove, {
       exposeOpponentKingToAttack: true,
     })
       ? invalidAndNotBlocking
