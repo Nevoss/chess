@@ -37,11 +37,10 @@ export const movePiecesMiddleware: Middleware<{}, RootState> =
       dispatch(actions.removePiecePosition(opponentPiece.id));
     }
 
-    dispatch(actions.updatePiecePosition(action.payload));
-
     if (!piece.hasMoved) {
       dispatch(actions.markPieceAsMoved(action.payload.id));
     }
 
+    dispatch(actions.updatePiecePosition(action.payload));
     dispatch(actions.toggleTurn());
   };
