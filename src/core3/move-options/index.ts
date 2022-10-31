@@ -15,7 +15,7 @@ const piecesMoveOptions: PiecesMoveOptions = new Map([
   [
     "king",
     {
-      maxSteps: () => 1,
+      maxSteps: (piece: OnBoardPiece) => (piece.hasMoved ? 1 : 2),
       handlers: handlers.get("king"),
       validations: validations.get("king"),
     },

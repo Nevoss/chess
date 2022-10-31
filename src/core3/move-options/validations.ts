@@ -7,6 +7,7 @@ import {
 import { MoveHandlerKey } from "./handlers";
 import { isPieceUnderAttack } from "../moves";
 import { makeStringPosition } from "../position";
+import { boardFiles } from "../board";
 
 type ValidateMoveFunction = (context: {
   piece: OnBoardPiece;
@@ -79,7 +80,56 @@ const defaults: ValidateMoveFunctionMap = new Map([
 ]);
 
 const piecesMovesValidation: Map<PieceType, ValidateMoveFunctionMap> = new Map([
-  ["king", new Map([...defaults, exposeKingToAttack])],
+  [
+    "king",
+    new Map([
+      ...defaults,
+      [
+        "castling",
+        ({ move: { to }, pieces, piece }) => {
+          if (piece.hasMoved) {
+            return validAndNotBlocking;
+          }
+
+          const canCastle = [
+            { color: "white", rook: ["a", "1"], kingTo: ["g", "1"] },
+            { color: "white", rook: ["h", "1"], kingTo: ["c", "1"] },
+            { color: "black", rook: ["a", "8"], kingTo: ["c", "8"] },
+            { color: "black", rook: ["h", "8"], kingTo: ["g", "8"] },
+          ]
+            .filter(({ color }) => piece.color === color)
+            .filter(({ kingTo }) => kingTo[0] === to[0] && kingTo[1] === to[1])
+            .filter(({ rook }) => {
+              const rookPiece = pieces[makeStringPosition(rook)];
+
+              return rookPiece && rookPiece.type === "rook" && !rookPiece.hasMoved;
+            })
+            .some(({ rook }) => {
+              console.log(rook);
+              const rookFileIndex = boardFiles.indexOf(rook[0]);
+              const kingFileIndex = boardFiles.indexOf(piece.position[0]);
+
+              for (
+                let i = Math.min(rookFileIndex, kingFileIndex) + 1;
+                i < Math.max(rookFileIndex, kingFileIndex);
+                i++
+              ) {
+                const position = [boardFiles[i], piece.position[1]] as BoardPosition;
+
+                if (pieces[makeStringPosition(position)]) {
+                  return false;
+                }
+              }
+
+              return true;
+            });
+
+          return canCastle ? validAndNotBlocking : invalidAndBlocking;
+        },
+      ],
+      exposeKingToAttack,
+    ]),
+  ],
   ["queen", new Map([...defaults, exposeKingToAttack])],
   ["bishop", new Map([...defaults, exposeKingToAttack])],
   ["knight", new Map([...defaults, exposeKingToAttack])],
