@@ -19,9 +19,19 @@ import {
   knightToRightTop,
   knightToRightBottom,
 } from "./handlers";
-import { MoveTransformer, pipeTransformers } from "@/core/moves/tansformers";
+import {
+  MoveTransformer,
+  friendlyPieceTransformer,
+  opponentPieceTransformer,
+  pawnColorDirectionTransformer,
+  pawnDiagonalMoveTransformer,
+  pawnFirstMoveTransformer,
+  pawnStraightMoveTransformer,
+  pipeTransformers,
+} from "@/core/moves/tansformers";
 import { PieceType } from "@/types/piece";
 import getBoardPositionIndexes from "@/core/position";
+import { GameState } from "@/types/game";
 
 const piecesMoveOptions: Record<
   PieceType,
@@ -39,7 +49,7 @@ const piecesMoveOptions: Record<
       toBottomLeft,
       toBottomRight,
     ],
-    transformers: [],
+    transformers: [friendlyPieceTransformer, opponentPieceTransformer],
   },
   queen: {
     maxSteps: 7,
@@ -53,12 +63,12 @@ const piecesMoveOptions: Record<
       toBottomLeft,
       toBottomRight,
     ],
-    transformers: [],
+    transformers: [friendlyPieceTransformer, opponentPieceTransformer],
   },
   bishop: {
     maxSteps: 7,
     handlers: [toTopLeft, toTopRight, toBottomLeft, toBottomRight],
-    transformers: [],
+    transformers: [friendlyPieceTransformer, opponentPieceTransformer],
   },
   knight: {
     maxSteps: 1,
@@ -72,21 +82,35 @@ const piecesMoveOptions: Record<
       knightToRightTop,
       knightToRightBottom,
     ],
-    transformers: [],
+    transformers: [friendlyPieceTransformer, opponentPieceTransformer],
   },
   rook: {
     maxSteps: 7,
     handlers: [toTop, toBottom, toRight, toLeft],
-    transformers: [],
+    transformers: [friendlyPieceTransformer, opponentPieceTransformer],
   },
   pawn: {
     maxSteps: 2, // When the pawn has not moved, it can move 2 steps.
     handlers: [toTop, toBottom, toTopLeft, toTopRight, toBottomLeft, toBottomRight],
-    transformers: [],
+    transformers: [
+      pawnColorDirectionTransformer,
+      pawnFirstMoveTransformer,
+      pawnStraightMoveTransformer,
+      pawnDiagonalMoveTransformer,
+    ],
   },
 };
 
-export default function getOptionalMoves(position: BoardPosition, board: BoardPositionMap): Move[] {
+// Board State
+// pieces
+// canCastle: { white: { kingSide: boolean, queenSide: boolean }, black: { kingSide: boolean, queenSide: boolean } }
+// enPassantPosition: BoardPosition | null
+// halfMoveClock: number
+// fullMoveNumber: number
+// turn: "white" | "black"
+// history: Move[]
+
+export default function getAvailableMoves(position: BoardPosition, gameState: GameState): Move[] {
   const piece = board.get(position);
 
   if (!piece) {
@@ -117,6 +141,7 @@ export default function getOptionalMoves(position: BoardPosition, board: BoardPo
           blocking: false,
           changes: [{ pieceId: piece.id, from: position, to }],
         },
+        piece,
         board
       );
 

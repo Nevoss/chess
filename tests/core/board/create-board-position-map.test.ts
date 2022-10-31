@@ -1,6 +1,6 @@
 import { createBoardPositionMap } from "@/core/board";
 
-describe("createGameBoardMap", () => {
+describe("createBoardPositionMap", () => {
   it("should create valid game board map", () => {
     const gameBoardMap = createBoardPositionMap(
       new Map([

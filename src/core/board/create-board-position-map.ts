@@ -3,7 +3,7 @@ import { OnBoardPiece } from "@/types/piece";
 import { boardFiles, boardRanks } from "@/core/board/index";
 import { toBoardPosition } from "@/core/position";
 
-export default function createGameBoardMap(
+export default function createBoardPositionMap(
   pieces: Map<BoardPosition, OnBoardPiece>
 ): BoardPositionMap {
   const boardMap: BoardPositionMap = new Map();
